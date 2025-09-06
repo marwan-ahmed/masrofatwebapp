@@ -18,7 +18,7 @@ type UpsertExpense = {
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [ReactiveFormsModule, DatePipe, CurrencyPipe],
+  imports: [DatePipe, CurrencyPipe],
   template: `
     <div class="bg-slate-100 dark:bg-slate-900 text-slate-800 dark:text-slate-200 min-h-screen font-sans">
       <header class="bg-sky-600 text-white shadow-md">
