@@ -1,3 +1,6 @@
+// FIX: Import Category model to be used in the Expense interface for better type safety.
+import { Category } from './category.model';
+
 export interface Expense {
   id: number;
   description: string;
@@ -5,5 +8,5 @@ export interface Expense {
   date: string;
   created_at?: string;
   // This will hold the joined category data from Supabase
-  category: { id: number; name: string } | null;
+  category: Category | null;
 }

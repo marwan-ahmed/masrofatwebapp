@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>متتبع المصروفات اليومية</title>
+  <!-- Added Zone.js back to ensure stable Angular bootstrapping -->
+  <script src="https://esm.sh/zone.js@0.14.7"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     /* Simple dark mode based on user preference */
@@ -11,6 +13,20 @@
       color-scheme: light dark;
     }
   </style>
+  <script type="importmap">
+{
+  "imports": {
+    "rxjs": "https://esm.sh/rxjs@^7.8.1",
+    "rxjs/operators": "https://esm.sh/rxjs@^7.8.1/operators",
+    "@angular/core": "https://esm.sh/@angular/core@^20.1.0",
+    "@angular/common": "https://esm.sh/@angular/common@^20.1.0",
+    "@angular/compiler": "https://esm.sh/@angular/compiler@^20.1.0",
+    "@angular/forms": "https://esm.sh/@angular/forms@^20.1.0",
+    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^20.1.0",
+    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.44.0"
+  }
+}
+</script>
 </head>
 <body class="bg-slate-100 dark:bg-slate-900">
   <app-root>
@@ -18,35 +34,5 @@
       Loading application...
     </div>
   </app-root>
-
-  <script type="importmap">
-  {
-    "imports": {
-      "rxjs": "https://aistudiocdn.com/rxjs@^7.8.2?conditions=es2015",
-      "rxjs/operators": "https://aistudiocdn.com/rxjs@^7.8.2/operators?conditions=es2015",
-      "rxjs/ajax": "https://aistudiocdn.com/rxjs@^7.8.2/ajax?conditions=es2015",
-      "rxjs/webSocket": "https://aistudiocdn.com/rxjs@^7.8.2/webSocket?conditions=es2015",
-      "rxjs/testing": "https://aistudiocdn.com/rxjs@^7.8.2/testing?conditions=es2015",
-      "rxjs/fetch": "https://aistudiocdn.com/rxjs@^7.8.2/fetch?conditions=es2015",
-      "@angular/core": "https://next.esm.sh/@angular/core@^20.1.6-0?external=rxjs",
-      "@angular/common": "https://next.esm.sh/@angular/common@^20.1.6-0?external=rxjs",
-      "@angular/forms": "https://next.esm.sh/@angular/forms@^20.1.6-0?external=rxjs",
-      "@supabase/supabase-js": "https://next.esm.sh/@supabase/supabase-js@^2.57.2?external=rxjs"
-    }
-  }
-  </script>
-
-  <script type="module">
-    import { bootstrapApplication } from 'https://next.esm.sh/@angular/platform-browser@^20.1.6-0';
-    import { AppComponent } from './src/app.component.ts';
-    import { provideHttpClient, withFetch } from 'https://next.esm.sh/@angular/common@^20.1.6-0/http';
-
-    bootstrapApplication(AppComponent, {
-        // Register application-level providers
-        providers: [
-            provideHttpClient(withFetch())
-        ]
-    }).catch(err => console.error(err));
-  </script>
 </body>
 </html>
