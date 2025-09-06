@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,9 +10,11 @@
         body {
             font-family: 'Arial', sans-serif;
         }
+
         .expense-item {
             background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
         }
+
         .delete-btn {
             background: transparent;
             border: none;
@@ -23,31 +26,36 @@
             align-items: center;
             justify-content: center;
         }
+
         .delete-btn:hover {
             background-color: #fee2e2;
             transform: scale(1.1);
         }
+
         .delete-btn svg {
             width: 20px;
             height: 20px;
             color: #ef4444;
         }
+
         .delete-btn:hover svg {
             color: #dc2626;
         }
     </style>
 </head>
+
 <body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
     <div class="container mx-auto px-4 py-8 max-w-4xl">
         <h1 class="text-4xl font-bold text-center text-indigo-800 mb-8">تطبيق تتبع المصاريف اليومية</h1>
-        
+
         <!-- نموذج إضافة المصروف -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
-            <h2 class="text-2xl font-semibold text-gray-800 mb-4">إضافة مصروف جديد</h2>
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">إضافة قيد جديد</h2>
             <form id="expenseForm" class="space-y-4">
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <input type="date" id="expenseDate" class="border rounded-lg p-3 w-full" required>
-                    <input type="text" id="expenseDescription" placeholder="الوصف (مثل: طعام)" class="border rounded-lg p-3 w-full" required>
+                    <input type="text" id="expenseDescription" placeholder="المادة (مثل: بيض)"
+                        class="border rounded-lg p-3 w-full" required>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <select id="expenseCategory" class="border rounded-lg p-3 w-full" required>
@@ -58,18 +66,21 @@
                         <option value="ترفيه">ترفيه</option>
                         <option value="أخرى">أخرى</option>
                     </select>
-                    <input type="number" id="expenseAmount" placeholder="المبلغ (دينار عراقي)" class="border rounded-lg p-3 w-full" step="0.01" required>
+                    <input type="number" id="expenseAmount" placeholder="المبلغ (دينار عراقي)"
+                        class="border rounded-lg p-3 w-full" step="0.01" required>
                 </div>
-                <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 w-full md:w-auto">إضافة المصروف</button>
+                <button type="submit"
+                    class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 w-full md:w-auto">إضافة
+                    قيد</button>
             </form>
         </div>
-        
+
         <!-- عرض الإجمالي -->
         <div class="bg-white rounded-lg shadow-md p-6 mb-8">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">إجمالي المصروفات</h2>
             <p id="totalExpenses" class="text-3xl font-bold text-green-600">0.00 دينار عراقي</p>
         </div>
-        
+
         <!-- قائمة المصروفات -->
         <div class="bg-white rounded-lg shadow-md p-6">
             <h2 class="text-2xl font-semibold text-gray-800 mb-4">قائمة المصروفات</h2>
@@ -78,26 +89,26 @@
             </ul>
         </div>
     </div>
-    
+
     <script>
         // تحميل البيانات من localStorage
         let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
-        
+
         const expenseForm = document.getElementById('expenseForm');
         const expenseList = document.getElementById('expenseList');
         const totalExpenses = document.getElementById('totalExpenses');
-        
+
         // دالة لحفظ البيانات
         function saveExpenses() {
             localStorage.setItem('expenses', JSON.stringify(expenses));
         }
-        
+
         // دالة لحساب الإجمالي
         function calculateTotal() {
             const total = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
             totalExpenses.textContent = total.toFixed(2) + ' دينار عراقي';
         }
-        
+
         // دالة لعرض المصروفات
         function displayExpenses() {
             expenseList.innerHTML = '';
@@ -122,14 +133,14 @@
             });
             calculateTotal();
         }
-        
+
         // دالة لحذف المصروف
         function deleteExpense(index) {
             expenses.splice(index, 1);
             saveExpenses();
             displayExpenses();
         }
-        
+
         // إرسال النموذج
         expenseForm.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -137,7 +148,7 @@
             const description = document.getElementById('expenseDescription').value;
             const category = document.getElementById('expenseCategory').value;
             const amount = document.getElementById('expenseAmount').value;
-            
+
             if (date && description && category && amount) {
                 expenses.push({ date, description, category, amount: parseFloat(amount).toFixed(2) });
                 saveExpenses();
@@ -147,10 +158,10 @@
                 alert('يرجى ملء جميع الحقول');
             }
         });
-        
+
         // عرض المصروفات عند تحميل الصفحة
         displayExpenses();
     </script>
 </body>
-</html>
 
+</html>
