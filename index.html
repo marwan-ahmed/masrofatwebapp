@@ -1,38 +1,156 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>متتبع المصروفات اليومية</title>
-  <!-- Added Zone.js back to ensure stable Angular bootstrapping -->
-  <script src="https://esm.sh/zone.js@0.14.7"></script>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <style>
-    /* Simple dark mode based on user preference */
-    :root {
-      color-scheme: light dark;
-    }
-  </style>
-  <script type="importmap">
-{
-  "imports": {
-    "rxjs": "https://esm.sh/rxjs@^7.8.1",
-    "rxjs/operators": "https://esm.sh/rxjs@^7.8.1/operators",
-    "@angular/core": "https://esm.sh/@angular/core@^20.1.0",
-    "@angular/common": "https://esm.sh/@angular/common@^20.1.0",
-    "@angular/compiler": "https://esm.sh/@angular/compiler@^20.1.0",
-    "@angular/forms": "https://esm.sh/@angular/forms@^20.1.0",
-    "@angular/platform-browser": "https://esm.sh/@angular/platform-browser@^20.1.0",
-    "@supabase/supabase-js": "https://esm.sh/@supabase/supabase-js@^2.44.0"
-  }
-}
-</script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تتبع المصاريف اليومية</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+        }
+        .expense-item {
+            background: linear-gradient(135deg, #f3f4f6 0%, #e5e7eb 100%);
+        }
+        .delete-btn {
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .delete-btn:hover {
+            background-color: #fee2e2;
+            transform: scale(1.1);
+        }
+        .delete-btn svg {
+            width: 20px;
+            height: 20px;
+            color: #ef4444;
+        }
+        .delete-btn:hover svg {
+            color: #dc2626;
+        }
+    </style>
 </head>
-<body class="bg-slate-100 dark:bg-slate-900">
-  <app-root>
-    <div style="display: flex; justify-content: center; align-items: center; height: 100vh; font-family: sans-serif; direction: ltr; color: #475569;">
-      Loading application...
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <h1 class="text-4xl font-bold text-center text-indigo-800 mb-8">تطبيق تتبع المصاريف اليومية</h1>
+        
+        <!-- نموذج إضافة المصروف -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">إضافة مصروف جديد</h2>
+            <form id="expenseForm" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <input type="date" id="expenseDate" class="border rounded-lg p-3 w-full" required>
+                    <input type="text" id="expenseDescription" placeholder="الوصف (مثل: طعام)" class="border rounded-lg p-3 w-full" required>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <select id="expenseCategory" class="border rounded-lg p-3 w-full" required>
+                        <option value="">اختر الفئة</option>
+                        <option value="طعام">طعام</option>
+                        <option value="نقل">نقل</option>
+                        <option value="تسوق">تسوق</option>
+                        <option value="ترفيه">ترفيه</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                    <input type="number" id="expenseAmount" placeholder="المبلغ (دينار عراقي)" class="border rounded-lg p-3 w-full" step="0.01" required>
+                </div>
+                <button type="submit" class="bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition duration-300 w-full md:w-auto">إضافة المصروف</button>
+            </form>
+        </div>
+        
+        <!-- عرض الإجمالي -->
+        <div class="bg-white rounded-lg shadow-md p-6 mb-8">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">إجمالي المصروفات</h2>
+            <p id="totalExpenses" class="text-3xl font-bold text-green-600">0.00 دينار عراقي</p>
+        </div>
+        
+        <!-- قائمة المصروفات -->
+        <div class="bg-white rounded-lg shadow-md p-6">
+            <h2 class="text-2xl font-semibold text-gray-800 mb-4">قائمة المصروفات</h2>
+            <ul id="expenseList" class="space-y-4">
+                <!-- العناصر ستُضاف هنا ديناميكياً -->
+            </ul>
+        </div>
     </div>
-  </app-root>
+    
+    <script>
+        // تحميل البيانات من localStorage
+        let expenses = JSON.parse(localStorage.getItem('expenses')) || [];
+        
+        const expenseForm = document.getElementById('expenseForm');
+        const expenseList = document.getElementById('expenseList');
+        const totalExpenses = document.getElementById('totalExpenses');
+        
+        // دالة لحفظ البيانات
+        function saveExpenses() {
+            localStorage.setItem('expenses', JSON.stringify(expenses));
+        }
+        
+        // دالة لحساب الإجمالي
+        function calculateTotal() {
+            const total = expenses.reduce((sum, expense) => sum + parseFloat(expense.amount), 0);
+            totalExpenses.textContent = total.toFixed(2) + ' دينار عراقي';
+        }
+        
+        // دالة لعرض المصروفات
+        function displayExpenses() {
+            expenseList.innerHTML = '';
+            expenses.forEach((expense, index) => {
+                const li = document.createElement('li');
+                li.className = 'expense-item p-4 rounded-lg flex justify-between items-center';
+                li.innerHTML = `
+                    <div>
+                        <p class="font-semibold text-gray-800">${expense.description} - ${expense.category}</p>
+                        <p class="text-gray-600">${expense.date}</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <span class="font-bold text-lg">${expense.amount} دينار عراقي</span>
+                        <button class="delete-btn" onclick="deleteExpense(${index})" title="حذف المصروف" aria-label="حذف المصروف">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="m19 7-.867 12.142A2 2 0 0 1 16.138 21H7.862a2 2 0 0 1-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                `;
+                expenseList.appendChild(li);
+            });
+            calculateTotal();
+        }
+        
+        // دالة لحذف المصروف
+        function deleteExpense(index) {
+            expenses.splice(index, 1);
+            saveExpenses();
+            displayExpenses();
+        }
+        
+        // إرسال النموذج
+        expenseForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const date = document.getElementById('expenseDate').value;
+            const description = document.getElementById('expenseDescription').value;
+            const category = document.getElementById('expenseCategory').value;
+            const amount = document.getElementById('expenseAmount').value;
+            
+            if (date && description && category && amount) {
+                expenses.push({ date, description, category, amount: parseFloat(amount).toFixed(2) });
+                saveExpenses();
+                displayExpenses();
+                expenseForm.reset();
+            } else {
+                alert('يرجى ملء جميع الحقول');
+            }
+        });
+        
+        // عرض المصروفات عند تحميل الصفحة
+        displayExpenses();
+    </script>
 </body>
 </html>
+
